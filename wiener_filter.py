@@ -1,7 +1,12 @@
-"""Wiener-Filter"""
+"""Wiener-Filter
+
+The module offers the following features:
+- functions to degrade an image
+- a Wiener-Filter function capable of applying different restoration functions
+- a tool to calculate the mean square error between two restoration steps
+"""
 import random
 
-import matplotlib.pyplot as plt
 import numpy as np
 from numpy.fft import fft2, ifft2
 
@@ -112,34 +117,3 @@ def mean_square_error(benchmark: np.ndarray, estimation: np.ndarray) -> float:
         for y in range(sy):
             sum += (benchmark[x][y] - estimation[x][y]) ** 2
     return sum / (sx * sy)
-
-
-if __name__ == "__main__":
-    # read and convert image
-    img_grayscaled = rgb_to_gray(plt.imread("lena.jpg"))
-    
-    # create degradation function
-    blur = motion_blur(img_grayscaled.shape, 1, (0, 0.045))
-    
-    # apply impulse noise to image
-    img_sap = salt_and_pepper_noise(img_grayscaled, 0.01)
-    
-    # apply Gaussian noise to image
-    img_noisy = gaussian_noise(img_sap, 12)
-    
-    # apply degradation function to blurred image
-    img_blurred = np.abs(ifft2(blur * fft2(img_noisy)))
-    
-    # apply Wiener-Filter on degraded image
-    img_filtered = wiener_filter(img_blurred, ifft2(blur), 0.004)
-    
-    # present results
-    figures = [img_grayscaled, img_noisy, img_blurred, img_filtered]
-    fig = plt.figure(figsize=(8, 8))
-    fig.canvas.manager.set_window_title("Anwendung des Wiener-Filters")
-    for i, img in enumerate(figures):
-        fig.add_subplot(2, 2, i + 1)
-        plt.imshow(img, cmap="gray")
-        plt.axis("off")
-        plt.subplots_adjust(left=0.05, bottom=0.05, wspace=0.1, hspace=0.1)
-    plt.show()
