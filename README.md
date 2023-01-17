@@ -1,2 +1,2 @@
-# wiener-filter
+# Wiener-Filter
 Application of the Wiener-Filter
